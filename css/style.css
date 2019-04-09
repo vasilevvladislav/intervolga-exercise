@@ -1,0 +1,8 @@
+#show-hide {
+  cursor: pointer;
+  color: blue;
+}
+
+#show-hide:hover {
+  text-decoration: underline;
+}

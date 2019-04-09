@@ -4,8 +4,15 @@
   <meta charset="utf-8">
   <title>Интерфейс добавления и просмотра данных</title>
   <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+  <!-- Подключение к БД + выборка уже имеющихся стран-->
+<?php
+  include 'db.php';
+  include 'api.php';
+  $coutryes = getALLCountryes($db)
+?>
 <div class="container">
   <div class="row">
     <table class="table table-striped">
@@ -17,45 +24,49 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td>07.04.2019 20:29</td>
-          <td>Австрия</td>
-        </tr>
-        <tr>
-          <th scope="row">2</th>
-          <td>07.04.2019 20:30</td>
-          <td>Андорра</td>
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td>07.04.2019 20:31</td>
-          <td>Бельгия</td>
-        </tr>
-        <tr>
-          <th scope="row">4</th>
-          <td>07.04.2019 20:32</td>
-          <td>Великобритания</td>
-        </tr>
+        <!-- Создание таблицы на основе массива имеющихся стран-->
+        <?php if (count($coutryes) > 0) {
+          foreach ($coutryes as $coutry){ ?>
+            <tr>
+              <th scope="row"><?php echo $coutry['id']; ?></th>
+              <td><?php echo date("d.m.Y H:i:s", strtotime($coutry['date_entry'])); ?></td>
+              <td><?php echo htmlspecialchars($coutry['countryname']); ?></td>
+            </tr>
+        <?php } } ?>
       </tbody>
     </table>
   </div>
+  <!-- Для пустой базы-->
+  <?php if (count($coutryes) == 0) { ?>
+    <div class="row  justify-content-center">
+      <p>Здесь пока нет данных.</p>
+    </div>
+  <?php } ?>
+  <!-- Форма для добавления страны в базу-->
   <div class="row">
-    <a href="#" id="show-hide">Добавить страну</a>
+    <span id="show-hide">Добавить страну &or;</span>
   </div>
-  <div class="row mt-4">
-    <form id="add-form" class="col-6" style="display: none;">
+  <div class="row mt-4 mt-4">
+    <form id="add-form" class="col-6" style="display: none;" method="post" action="">
       <div class="form-row">
         <div class="col-9">
-          <input type="text" class="form-control" id="countryname" placeholder="Название страны">
+          <input type="text" class="form-control" name="countryname" placeholder="Название страны" required>
         </div>
         <div class="col-3">
           <button type="submit" class="btn btn-primary">Добавить</button>
         </div>
       </div>
     </form>
+    <!-- Вызов сохранения и обновление экрана-->
+    <?php
+        if(isset($_POST['countryname']) && $_POST['countryname'] !='') {
+          addCountry($db,$_POST['countryname']);
+          echo "<meta http-equiv='refresh' content='0'>";
+        }
+     ?>
   </div>
 </div>
+<!-- Разворачивание формы сохранения-->
 <script src="/js/script.js"></script>
 </body>
 </html>
